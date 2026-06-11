@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0A0A0F">
+<title>HEAVY BAG TRAINER</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ring-red: #C8102E;
+  --ring-red-dim: #8B0B1F;
+  --ring-red-glow: rgba(200,16,46,0.18);
+  --gold: #FFD700;
+  --gold-dim: #B8990A;
+  --carbon: #0A0A0F;
+  --carbon-mid: #13131A;
+  --carbon-surface: #1C1C28;
+  --steel: #2A2A3A;
+  --steel-light: #3A3A50;
+  --leather: #F0EDE8;
+  --leather-dim: #B8B4AE;
+  --leather-muted: #706C68;
+  --radius: 6px;
+  --radius-lg: 12px;
+  --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--carbon);
+  color: var(--leather);
+  font-family: var(--font-body);
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 280px 1fr;
+  grid-template-areas:
+    "header header"
+    "sidebar main";
+  height: 100vh;
+  min-height: 600px;
+}
+
+/* ─── HEADER ─────────────────────────────────────── */
+#app-header {
+  grid-area: header;
+  background: var(--carbon-mid);
+  border-bottom: 1px solid rgba(200,16,46,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 56px;
+  gap: 16px;
+}
+
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.logo-mark {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--ring-red);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.logo-sub {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--leather-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.header-status {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.round-badge {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.state-pill {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid transparent;
+  background: var(--steel);
+  color: var(--leather-muted);
+  transition: all 0.2s;
+}
+.state-pill.round { background: var(--ring-red-glow); border-color: var(--ring-red); color: var(--ring-red); }
+.state-pill.rest   { background: rgba(255,215,0,0.1); border-color: var(--gold-dim); color: var(--gold); }
+.state-pill.prep   { background: rgba(255,255,255,0.06); border-color: var(--steel-light); color: var(--leather-dim); }
+.state-pill.fin    { background: rgba(0,200,100,0.1); border-color: #1a7a40; color: #3de080; }
+
+/* ─── SIDEBAR ─────────────────────────────────────── */
+#sidebar {
+  grid-area: sidebar;
+  background: var(--carbon-mid);
+  border-right: 1px solid rgba(255,255,255,0.06);
+  overflow-y: auto;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#sidebar::-webkit-scrollbar { width: 4px; }
+#sidebar::-webkit-scrollbar-track { background: transparent; }
+#sidebar::-webkit-scrollbar-thumb { background: var(--steel); border-radius: 2px; }
+
+.section-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--leather-muted);
+  margin-bottom: 10px;
+}
+
+.config-group {
+  background: var(--carbon-surface);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+}
+
+.config-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.config-row:last-child { margin-bottom: 0; }
+
+.config-label {
+  font-size: 12px;
+  color: var(--leather-dim);
+  font-weight: 500;
+}
+
+.config-val {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--leather);
+  min-width: 40px;
+  text-align: right;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 3px;
+  background: var(--steel);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  margin: 4px 0 10px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: var(--ring-red);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.3); }
+
+.select-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.select-btn {
+  flex: 1;
+  min-width: 60px;
+  padding: 6px 8px;
+  background: var(--steel);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius);
+  color: var(--leather-dim);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.select-btn:hover { background: var(--steel-light); color: var(--leather); }
+.select-btn.active { background: var(--ring-red-glow); border-color: var(--ring-red); color: var(--ring-red); }
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: var(--ring-red);
+  border: none;
+  border-radius: var(--radius-lg);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-primary:hover { background: #e01030; transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { background: var(--steel); color: var(--leather-muted); cursor: not-allowed; transform: none; }
+
+.btn-secondary {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid var(--steel-light);
+  border-radius: var(--radius-lg);
+  color: var(--leather-dim);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-secondary:hover { border-color: var(--leather-muted); color: var(--leather); }
+.btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-row { display: flex; gap: 8px; }
+
+/* History list */
+.history-list { display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto; }
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  background: var(--carbon-surface);
+  border-radius: var(--radius);
+  font-size: 12px;
+}
+.history-date { color: var(--leather-muted); }
+.history-info { color: var(--leather-dim); }
+.history-badge {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--ring-red-glow);
+  color: var(--ring-red);
+}
+
+.empty-history {
+  text-align: center;
+  color: var(--leather-muted);
+  font-size: 12px;
+  padding: 16px;
+}
+
+/* ─── MAIN ARENA ──────────────────────────────────── */
+#main-arena {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hexagonal ring floor texture */
+#main-arena::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(200,16,46,0.04) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+/* ─── HEXAGONAL TIMER ─────────────────────────────── */
+.hex-container {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  margin-bottom: 24px;
+  flex-shrink: 0;
+}
+
+.hex-svg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.hex-bg-path {
+  fill: var(--carbon-surface);
+  stroke: rgba(255,255,255,0.06);
+  stroke-width: 1.5;
+}
+
+.hex-ring-track {
+  fill: none;
+  stroke: var(--steel);
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+.hex-ring-progress {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke: var(--ring-red);
+  transition: stroke-dashoffset 0.12s linear, stroke 0.3s;
+  transform-origin: center;
+  transform: rotate(-90deg);
+}
+
+.hex-ring-progress.rest-mode { stroke: var(--gold); }
+
+.hex-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.timer-display {
+  font-family: var(--font-display);
+  font-size: 68px;
+  font-weight: 900;
+  color: var(--leather);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-shadow: 0 0 40px rgba(200,16,46,0.25);
+  transition: color 0.3s;
+}
+.timer-display.rest-mode { color: var(--gold); text-shadow: 0 0 40px rgba(255,215,0,0.2); }
+.timer-display.warning { color: var(--ring-red); }
+
+.timer-label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--leather-muted);
+  margin-top: 2px;
+}
+
+/* ─── COMBO DISPLAY ───────────────────────────────── */
+.combo-arena {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.combo-board {
+  width: 100%;
+  background: var(--carbon-surface);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.combo-board::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--ring-red);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.combo-board.active::before { opacity: 1; }
+
+.combo-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--leather-muted);
+  margin-bottom: 4px;
+}
+
+.combo-strikes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.strike-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  border: 1px solid;
+  font-family: var(--font-display);
+  transition: all 0.15s;
+  min-width: 52px;
+}
+
+.strike-chip .num {
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.strike-chip .name {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Colours by strike category */
+.chip-jab     { background: rgba(55,138,221,0.12); border-color: rgba(55,138,221,0.35); color: #7ab8f0; }
+.chip-cross   { background: rgba(200,16,46,0.12);  border-color: rgba(200,16,46,0.35);  color: #e05070; }
+.chip-hook    { background: rgba(239,159,39,0.12); border-color: rgba(239,159,39,0.35); color: #f0c060; }
+.chip-upper   { background: rgba(93,202,165,0.12); border-color: rgba(93,202,165,0.35); color: #7adec0; }
+.chip-body    { background: rgba(147,77,255,0.12); border-color: rgba(147,77,255,0.35); color: #c090ff; }
+.chip-defense { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); color: var(--leather-muted); }
+.chip-sep     { background: transparent; border-color: transparent; color: var(--leather-muted); font-size: 20px; padding: 4px 2px; }
+
+.combo-instruction {
+  font-size: 13px;
+  color: var(--leather-muted);
+  text-align: center;
+  font-style: italic;
+}
+
+.combo-cue {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+  text-transform: uppercase;
+  display: none;
+}
+.combo-cue.active { display: block; }
+
+/* ─── STATS BAR ───────────────────────────────────── */
+.stats-bar {
+  width: 100%;
+  max-width: 680px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.stat-card {
+  background: var(--carbon-surface);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  text-align: center;
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--leather);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--leather-muted);
+  margin-top: 3px;
+}
+
+/* ─── BELL FLASH ──────────────────────────────────── */
+@keyframes bell-flash {
+  0%   { background: rgba(200,16,46,0.25); }
+  50%  { background: rgba(200,16,46,0.05); }
+  100% { background: transparent; }
+}
+#main-arena.bell-ring {
+  animation: bell-flash 0.6s ease-out forwards;
+}
+
+/* ─── COMBO FLASH ─────────────────────────────────── */
+@keyframes combo-pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.015); }
+  100% { transform: scale(1); }
+}
+.combo-board.pulse { animation: combo-pulse 0.25s ease-out; }
+
+/* ─── IDLE SCREEN ─────────────────────────────────── */
+#idle-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.idle-title {
+  font-family: var(--font-display);
+  font-size: 52px;
+  font-weight: 900;
+  color: var(--ring-red);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 0.9;
+}
+
+.idle-sub {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--leather-muted);
+  margin-top: 6px;
+}
+
+/* ─── SPEECH toggle ───────────────────────────────── */
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggle-track {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  background: var(--steel);
+  border-radius: 9px;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.toggle-track.on { background: var(--ring-red); }
+.toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.toggle-track.on .toggle-thumb { transform: translateX(14px); }
+.toggle-label { font-size: 12px; color: var(--leather-dim); }
+
+/* ─── SCROLLBAR ───────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--steel); border-radius: 2px; }
+
+/* ─── FINISHED OVERLAY ────────────────────────────── */
+#finished-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(10,10,15,0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  z-index: 10;
+  display: none;
+}
+#finished-overlay.visible { display: flex; }
+
+.finished-title {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 900;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1;
+}
+.finished-sub {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--leather-muted);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+</style>
+</head>
+<body>
+
+<!-- ─── HEADER ──────────────────────────────────────── -->
+<header id="app-header">
+  <div class="logo">
+    <span class="logo-mark">⬡ Heavy Bag</span>
+    <span class="logo-sub">Trainer Pro</span>
+  </div>
+  <div class="header-status">
+    <span class="round-badge" id="hdr-round">–</span>
+    <span class="state-pill" id="hdr-state">Listo</span>
+  </div>
+</header>
+
+<!-- ─── SIDEBAR ─────────────────────────────────────── -->
+<aside id="sidebar">
+
+  <!-- Configuración de Sesión -->
+  <div>
+    <div class="section-label">Configuración</div>
+    <div class="config-group">
+      <div class="config-row">
+        <span class="config-label">Asaltos</span>
+        <span class="config-val" id="val-rounds">3</span>
+      </div>
+      <input type="range" id="sl-rounds" min="1" max="12" value="3">
+
+      <div class="config-row">
+        <span class="config-label">Tiempo de asalto</span>
+        <span class="config-val" id="val-round-time">3 min</span>
+      </div>
+      <input type="range" id="sl-round-time" min="1" max="5" step="0.5" value="3">
+
+      <div class="config-row">
+        <span class="config-label">Descanso</span>
+        <span class="config-val" id="val-rest-time">1 min</span>
+      </div>
+      <input type="range" id="sl-rest-time" min="0.5" max="3" step="0.5" value="1">
+    </div>
+  </div>
+
+  <!-- Nivel -->
+  <div>
+    <div class="section-label">Nivel</div>
+    <div class="select-row">
+      <button class="select-btn active" data-level="beginner">Principiante</button>
+      <button class="select-btn" data-level="intermediate">Intermedio</button>
+      <button class="select-btn" data-level="advanced">Avanzado</button>
+    </div>
+  </div>
+
+  <!-- Ritmo de Combos -->
+  <div>
+    <div class="section-label">Ritmo de combos</div>
+    <div class="config-group">
+      <div class="config-row">
+        <span class="config-label">Intervalo entre combos</span>
+        <span class="config-val" id="val-combo-interval">12 s</span>
+      </div>
+      <input type="range" id="sl-combo-interval" min="5" max="30" step="1" value="12">
+    </div>
+  </div>
+
+  <!-- Audio Coach -->
+  <div>
+    <div class="section-label">Audio Coach</div>
+    <div class="config-group" style="display:flex;flex-direction:column;gap:12px;">
+      <label class="toggle-wrap">
+        <div class="toggle-track on" id="toggle-speech">
+          <div class="toggle-thumb"></div>
+        </div>
+        <span class="toggle-label">Voz de entrenador</span>
+      </label>
+      <label class="toggle-wrap">
+        <div class="toggle-track on" id="toggle-bell">
+          <div class="toggle-thumb"></div>
+        </div>
+        <span class="toggle-label">Campana de ring</span>
+      </label>
+      <div class="config-row" style="margin:0">
+        <span class="config-label">Velocidad de voz</span>
+        <span class="config-val" id="val-speech-rate">1.0×</span>
+      </div>
+      <input type="range" id="sl-speech-rate" min="0.8" max="1.5" step="0.1" value="1.0">
+    </div>
+  </div>
+
+  <!-- Controles -->
+  <div style="margin-top:auto;padding-top:8px;display:flex;flex-direction:column;gap:8px;">
+    <button class="btn-primary" id="btn-start">▶ COMENZAR</button>
+    <div class="btn-row">
+      <button class="btn-secondary" id="btn-pause" disabled>⏸ PAUSA</button>
+      <button class="btn-secondary" id="btn-stop" disabled>⏹ DETENER</button>
+    </div>
+  </div>
+
+  <!-- Historial -->
+  <div>
+    <div class="section-label">Historial</div>
+    <div class="history-list" id="history-list">
+      <div class="empty-history">Sin entrenamientos aún</div>
+    </div>
+  </div>
+
+</aside>
+
+<!-- ─── MAIN ARENA ─────────────────────────────────── -->
+<main id="main-arena">
+
+  <!-- Idle -->
+  <div id="idle-screen">
+    <div class="idle-title">Listo<br>Para<br>Pelear</div>
+    <div class="idle-sub">Configura y presiona comenzar</div>
+  </div>
+
+  <!-- Training UI (hidden until started) -->
+  <div id="training-ui" style="width:100%;max-width:680px;display:none;flex-direction:column;align-items:center;gap:20px;">
+
+    <!-- Hex Timer -->
+    <div class="hex-container">
+      <svg class="hex-svg" viewBox="0 0 280 280">
+        <!-- Hex background -->
+        <polygon class="hex-bg-path" points="140,10 250,72 250,208 140,270 30,208 30,72"/>
+        <!-- Progress ring (using a circle for smoothness) -->
+        <circle class="hex-ring-track" cx="140" cy="140" r="118"/>
+        <circle class="hex-ring-progress" id="progress-ring" cx="140" cy="140" r="118"/>
+      </svg>
+      <div class="hex-inner">
+        <div class="timer-display" id="timer-display">3:00</div>
+        <div class="timer-label" id="timer-label">ASALTO 1</div>
+      </div>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-combos">0</div>
+        <div class="stat-label">Combos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-punches">0</div>
+        <div class="stat-label">Golpes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-round-num">1</div>
+        <div class="stat-label">Asalto</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-elapsed">0:00</div>
+        <div class="stat-label">Transcurrido</div>
+      </div>
+    </div>
+
+    <!-- Combo board -->
+    <div class="combo-board" id="combo-board">
+      <div class="combo-instruction">Preparándose… El entrenador lanzará el primer combo</div>
+    </div>
+
+  </div>
+
+  <!-- Finished overlay -->
+  <div id="finished-overlay">
+    <div class="finished-title">¡Gran<br>Trabajo!</div>
+    <div class="finished-sub">Entrenamiento completado</div>
+    <button class="btn-primary" style="width:220px;" onclick="resetApp()">Nueva Sesión</button>
+  </div>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// TIMER WORKER (inline via Blob URL)
+// ═══════════════════════════════════════════════════════════════
+const WORKER_CODE = `
+let timerId = null;
+let elapsed = 0;
+self.onmessage = function(e) {
+  const { action } = e.data;
+  if (action === 'START') {
+    if (timerId) clearInterval(timerId);
+    timerId = setInterval(() => {
+      elapsed += 100;
+      self.postMessage({ type: 'TICK', elapsed });
+    }, 100);
+  } else if (action === 'PAUSE') {
+    clearInterval(timerId); timerId = null;
+  } else if (action === 'RESET') {
+    clearInterval(timerId); timerId = null; elapsed = 0;
+    self.postMessage({ type: 'RESET' });
+  }
+};
+`;
+
+// ═══════════════════════════════════════════════════════════════
+// COMBO DATABASE — Motor Biomecánico
+// ═══════════════════════════════════════════════════════════════
+const STRIKE_INFO = {
+  1:  { label:'1',  name:'Jab',        cls:'chip-jab'   },
+  2:  { label:'2',  name:'Cross',      cls:'chip-cross'  },
+  3:  { label:'3',  name:'Hook I',     cls:'chip-hook'  },
+  4:  { label:'4',  name:'Hook D',     cls:'chip-hook'  },
+  5:  { label:'5',  name:'Upper I',    cls:'chip-upper' },
+  6:  { label:'6',  name:'Upper D',    cls:'chip-upper' },
+  '2b':{ label:'2↓', name:'Cross Cuerpo', cls:'chip-body' },
+  '3b':{ label:'3↓', name:'Hook Cuerpo', cls:'chip-body' },
+  'SL':{ label:'⤴',  name:'Slip I',     cls:'chip-defense' },
+  'SR':{ label:'⤵',  name:'Slip D',     cls:'chip-defense' },
+  'RL':{ label:'↙',  name:'Roll I',     cls:'chip-defense' },
+  'PV':{ label:'↪',  name:'Pivot',      cls:'chip-defense' },
+  'D' :{ label:'—',  name:'Pato',       cls:'chip-defense' },
+};
+
+const COMBOS = {
+  beginner: [
+    { id:'b1', name:'El Clásico',    strikes:[1,2],       speech:'Jab, Cross' },
+    { id:'b2', name:'Triple Jab',    strikes:[1,1,2],     speech:'Jab, Jab, Cross' },
+    { id:'b3', name:'Doble y Hook',  strikes:[1,2,3],     speech:'Jab, Cross, Hook izquierdo' },
+    { id:'b4', name:'Jab y Upper',   strikes:[1,4],       speech:'Jab, Uppercut derecho' },
+    { id:'b5', name:'Básica 4',      strikes:[1,2,3,2],   speech:'Jab, Cross, Hook, Cross' },
+    { id:'b6', name:'Dos Jabs',      strikes:[1,1,2],     speech:'Doble Jab, Cross' },
+    { id:'b7', name:'Al Cuerpo',     strikes:[1,'2b'],    speech:'Jab, Cross al cuerpo' },
+    { id:'b8', name:'Jab-Upper',     strikes:[1,5,2],     speech:'Jab, Uppercut izquierdo, Cross' },
+  ],
+  intermediate: [
+    { id:'i1', name:'Abajo-Arriba',  strikes:[1,'2b',3],  speech:'Jab, Cross cuerpo, Hook cabeza' },
+    { id:'i2', name:'Slip y Cross',  strikes:[1,2,'SR',2], speech:'Jab, Cross, Slip derecho, Cross' },
+    { id:'i3', name:'El Roll',       strikes:[1,2,'RL',3], speech:'Jab, Cross, Roll, Hook' },
+    { id:'i4', name:'Body Doble',    strikes:['3b','2b',3],speech:'Hook cuerpo, Cross cuerpo, Hook cabeza' },
+    { id:'i5', name:'Pato y Asalto', strikes:[1,'D',5,2], speech:'Jab, Pato, Upper izquierdo, Cross' },
+    { id:'i6', name:'Combinación 6', strikes:[1,2,3,2,3,2],speech:'Jab, Cross, Hook, Cross, Hook, Cross' },
+    { id:'i7', name:'Slip y Bomba',  strikes:['SL',3,2],  speech:'Slip izquierdo, Hook, Cross' },
+    { id:'i8', name:'Cuatro al Cuerpo',strikes:[1,'2b','3b',2],speech:'Jab, Cross cuerpo, Hook cuerpo, Cross' },
+  ],
+  advanced: [
+    { id:'a1', name:'Infernal',      strikes:[1,2,'3b','2b','SR',2,3], speech:'Jab, Cross, Hook cuerpo, Cross cuerpo, Slip, Cross, Hook. ¡Vuélelo!' },
+    { id:'a2', name:'El Pivot',      strikes:[1,2,'PV',3,2],           speech:'Jab, Cross, Pivot, Hook, Cross' },
+    { id:'a3', name:'Finta-Bomba',   strikes:[1,1,2,3,2],              speech:'Finta de Jab, Jab real, Cross, Hook, Cross. Hazlo rápido' },
+    { id:'a4', name:'Combinación 8', strikes:[1,2,'3b','2b',5,6,3,2], speech:'Ocho golpes. Jab, Cross, Hook cuerpo, Cross cuerpo, Upper izquierdo, Upper derecho, Hook, Cross' },
+    { id:'a5', name:'Ritmo Roto',    strikes:[1,2,1,1,2,3],            speech:'Jab-Cross, pausa, Doble jab-Cross-Hook. ¡Rompe el ritmo!' },
+    { id:'a6', name:'Contragolpe',   strikes:['SL',3,'SR',2,3,2],     speech:'Slip, Hook, Slip, Cross, Hook, Cross. Responde al rival' },
+    { id:'a7', name:'El Torbellino', strikes:[5,6,3,4,1,2,3],         speech:'Upper-Upper-Hook-Hook-Jab-Cross-Hook. ¡No pares!' },
+    { id:'a8', name:'Roll Total',    strikes:[1,2,'D','3b',5,2,3],    speech:'Jab, Cross, Pato, Hook cuerpo, Upper izquierdo, Cross, Hook final' },
+  ],
+};
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+const STATE = {
+  IDLE:'IDLE', PREP:'PREP', ROUND:'ROUND', REST:'REST', PAUSED:'PAUSED', FINISHED:'FINISHED'
+};
+
+let appState = STATE.IDLE;
+let worker = null;
+let config = {
+  rounds: 3,
+  roundTime: 3 * 60,   // seconds
+  restTime: 1 * 60,
+  prepTime: 10,
+  level: 'beginner',
+  comboInterval: 12,   // seconds
+  speechEnabled: true,
+  bellEnabled: true,
+  speechRate: 1.0,
+};
+
+let session = {
+  currentRound: 1,
+  stateTimeLeft: 0,
+  totalElapsed: 0,
+  combosThrown: 0,
+  punchesThrown: 0,
+  nextComboIn: 0,
+  paused: false,
+  pausedState: null,
+  lastComboId: null,
+};
+
+// Progress ring math
+const RING_R = 118;
+const RING_CIRC = 2 * Math.PI * RING_R;
+const progressRing = document.getElementById('progress-ring');
+progressRing.style.strokeDasharray = RING_CIRC;
+progressRing.style.strokeDashoffset = 0;
+
+// ═══════════════════════════════════════════════════════════════
+// AUDIO: Bell via WebAudio API
+// ═══════════════════════════════════════════════════════════════
+let audioCtx = null;
+function ensureAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+
+function playBell(count = 1) {
+  if (!config.bellEnabled) return;
+  ensureAudio();
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const osc1 = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc1.connect(gain); osc2.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc1.frequency.value = 880;
+      osc2.frequency.value = 1320;
+      osc1.type = 'sine'; osc2.type = 'triangle';
+      gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
+      osc1.start(); osc2.start();
+      osc1.stop(audioCtx.currentTime + 1.2);
+      osc2.stop(audioCtx.currentTime + 1.2);
+    }, i * 700);
+  }
+}
+
+function playWarningBeep() {
+  ensureAudio();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.frequency.value = 660;
+  osc.type = 'square';
+  gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+  osc.start(); osc.stop(audioCtx.currentTime + 0.12);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SPEECH
+// ═══════════════════════════════════════════════════════════════
+let speechQueue = [];
+let speaking = false;
+
+function speak(text, priority = false) {
+  if (!config.speechEnabled) return;
+  if (!('speechSynthesis' in window)) return;
+  if (priority) {
+    window.speechSynthesis.cancel();
+    speechQueue = [];
+    speaking = false;
+  }
+  speechQueue.push(text);
+  if (!speaking) drainSpeechQueue();
+}
+
+function drainSpeechQueue() {
+  if (!speechQueue.length) { speaking = false; return; }
+  speaking = true;
+  const utter = new SpeechSynthesisUtterance(speechQueue.shift());
+  utter.lang = 'es-ES';
+  utter.rate = config.speechRate;
+  utter.pitch = 1.05;
+  utter.onend = () => { setTimeout(drainSpeechQueue, 80); };
+  utter.onerror = () => { speaking = false; drainSpeechQueue(); };
+  window.speechSynthesis.speak(utter);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// WORKER
+// ═══════════════════════════════════════════════════════════════
+function createWorker() {
+  const blob = new Blob([WORKER_CODE], { type: 'application/javascript' });
+  const url = URL.createObjectURL(blob);
+  worker = new Worker(url);
+  worker.onmessage = (e) => {
+    if (e.data.type === 'TICK') onTick();
+  };
+}
+
+function onTick() {
+  if (session.paused) return;
+  session.stateTimeLeft = Math.max(0, session.stateTimeLeft - 100);
+  session.totalElapsed += 100;
+  session.nextComboIn = Math.max(0, session.nextComboIn - 100);
+
+  updateTimerUI();
+  updateElapsed();
+
+  // Combo trigger
+  if (appState === STATE.ROUND && session.nextComboIn <= 0) {
+    throwCombo();
+    session.nextComboIn = config.comboInterval * 1000 + Math.random() * 3000;
+  }
+
+  // Warning at 10s left in round
+  if (appState === STATE.ROUND && session.stateTimeLeft <= 10000 && session.stateTimeLeft > 9900) {
+    playWarningBeep();
+    speak('Diez segundos', true);
+  }
+
+  // Countdown 3-2-1 in prep
+  if (appState === STATE.PREP) {
+    if (session.stateTimeLeft <= 3100 && session.stateTimeLeft > 3000) speak('Tres');
+    if (session.stateTimeLeft <= 2100 && session.stateTimeLeft > 2000) speak('Dos');
+    if (session.stateTimeLeft <= 1100 && session.stateTimeLeft > 1000) speak('Uno');
+  }
+
+  // State transition
+  if (session.stateTimeLeft <= 0) handleTransition();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STATE MACHINE
+// ═══════════════════════════════════════════════════════════════
+function handleTransition() {
+  switch (appState) {
+    case STATE.PREP:
+      appState = STATE.ROUND;
+      session.stateTimeLeft = config.roundTime * 1000;
+      session.nextComboIn = 2000; // first combo after 2s
+      playBell(1);
+      speak('¡Round! ¡Muévete!', true);
+      triggerBellFlash();
+      updateHeaderState();
+      scheduleFirstCombo();
+      break;
+
+    case STATE.ROUND:
+      if (session.currentRound < config.rounds) {
+        appState = STATE.REST;
+        session.stateTimeLeft = config.restTime * 1000;
+        playBell(2);
+        speak('¡Tiempo! Buen round. Descansa. Recupera el aire.', true);
+        triggerBellFlash();
+        clearComboBoard();
+      } else {
+        appState = STATE.FINISHED;
+        worker.postMessage({ action: 'RESET' });
+        playBell(3);
+        speak('¡Tiempo! Entrenamiento completado. Buen trabajo, campeón.', true);
+        triggerBellFlash();
+        saveHistory();
+        showFinished();
+      }
+      updateHeaderState();
+      break;
+
+    case STATE.REST:
+      session.currentRound++;
+      appState = STATE.ROUND;
+      session.stateTimeLeft = config.roundTime * 1000;
+      session.nextComboIn = 2000;
+      playBell(1);
+      speak(`Asalto ${session.currentRound}. ¡A la guerra!`, true);
+      triggerBellFlash();
+      updateHeaderState();
+      break;
+  }
+}
+
+function scheduleFirstCombo() {
+  // Slight delay so bell finishes
+  session.nextComboIn = 3000;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// COMBO ENGINE
+// ═══════════════════════════════════════════════════════════════
+function throwCombo() {
+  const pool = COMBOS[config.level];
+  let available = pool.filter(c => c.id !== session.lastComboId);
+  if (!available.length) available = pool;
+  const combo = available[Math.floor(Math.random() * available.length)];
+  session.lastComboId = combo.id;
+
+  session.combosThrown++;
+  session.punchesThrown += combo.strikes.filter(s => typeof s === 'number').length;
+
+  renderCombo(combo);
+  speak(combo.speech);
+  updateStats();
+}
+
+function renderCombo(combo) {
+  const board = document.getElementById('combo-board');
+  board.classList.add('active');
+  board.classList.remove('pulse');
+  void board.offsetWidth; // reflow
+  board.classList.add('pulse');
+
+  const name = `<div class="combo-name">${combo.name}</div>`;
+  const chips = combo.strikes.map(s => {
+    const info = STRIKE_INFO[s];
+    if (!info) return '';
+    return `<div class="strike-chip ${info.cls}">
+      <span class="num">${info.label}</span>
+      <span class="name">${info.name}</span>
+    </div>`;
+  }).join('');
+
+  const defenseCount = combo.strikes.filter(s => typeof s === 'string' && ['SL','SR','RL','PV','D'].includes(s)).length;
+  const hasDefense = defenseCount > 0;
+  const tipMap = {
+    beginner: '📌 Vuelve a guardia tras cada golpe',
+    intermediate: hasDefense ? '📌 Aprovecha el movimiento defensivo para el contragolpe' : '📌 Cambia de plano arriba/abajo',
+    advanced: '📌 Ritmo explosivo — rompe el patrón',
+  };
+
+  board.innerHTML = `
+    ${name}
+    <div class="combo-strikes">${chips}</div>
+    <div class="combo-instruction">${tipMap[config.level]}</div>
+  `;
+}
+
+function clearComboBoard() {
+  const board = document.getElementById('combo-board');
+  board.classList.remove('active');
+  board.innerHTML = '<div class="combo-instruction">Descansando…</div>';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// UI UPDATES
+// ═══════════════════════════════════════════════════════════════
+function updateTimerUI() {
+  const tl = session.stateTimeLeft;
+  const mins = Math.floor(tl / 60000);
+  const secs = Math.floor((tl % 60000) / 1000);
+  const display = document.getElementById('timer-display');
+  display.textContent = `${mins}:${String(secs).padStart(2, '0')}`;
+
+  const isRest = appState === STATE.REST;
+  display.className = 'timer-display' + (isRest ? ' rest-mode' : '') + (tl <= 10000 && appState === STATE.ROUND ? ' warning' : '');
+
+  // Progress ring
+  const totalMs = appState === STATE.ROUND ? config.roundTime * 1000
+                : appState === STATE.REST  ? config.restTime * 1000
+                : appState === STATE.PREP  ? config.prepTime * 1000 : 1;
+  const fraction = tl / totalMs;
+  const offset = RING_CIRC * (1 - fraction);
+  progressRing.style.strokeDashoffset = offset;
+  progressRing.className = 'hex-ring-progress' + (isRest ? ' rest-mode' : '');
+
+  // Label
+  document.getElementById('timer-label').textContent =
+    appState === STATE.ROUND ? `ASALTO ${session.currentRound} / ${config.rounds}` :
+    appState === STATE.REST  ? 'DESCANSO' :
+    appState === STATE.PREP  ? 'PREPARACIÓN' : '';
+}
+
+function updateElapsed() {
+  const ms = session.totalElapsed;
+  const m = Math.floor(ms / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+  document.getElementById('stat-elapsed').textContent = `${m}:${String(s).padStart(2,'0')}`;
+}
+
+function updateStats() {
+  document.getElementById('stat-combos').textContent = session.combosThrown;
+  document.getElementById('stat-punches').textContent = session.punchesThrown;
+  document.getElementById('stat-round-num').textContent = session.currentRound;
+}
+
+function updateHeaderState() {
+  const pill = document.getElementById('hdr-state');
+  const badge = document.getElementById('hdr-round');
+  const map = {
+    [STATE.IDLE]:'Listo', [STATE.PREP]:'Preparación',
+    [STATE.ROUND]:'Round', [STATE.REST]:'Descanso',
+    [STATE.PAUSED]:'Pausa', [STATE.FINISHED]:'Terminado',
+  };
+  const cls = {
+    [STATE.ROUND]:'round', [STATE.REST]:'rest',
+    [STATE.PREP]:'prep', [STATE.FINISHED]:'fin',
+  };
+  pill.textContent = map[appState] || 'Listo';
+  pill.className = 'state-pill ' + (cls[appState] || '');
+  badge.textContent = appState === STATE.IDLE || appState === STATE.FINISHED
+    ? '–' : `R${session.currentRound}/${config.rounds}`;
+}
+
+function triggerBellFlash() {
+  const arena = document.getElementById('main-arena');
+  arena.classList.remove('bell-ring');
+  void arena.offsetWidth;
+  arena.classList.add('bell-ring');
+  setTimeout(() => arena.classList.remove('bell-ring'), 600);
+}
+
+function showFinished() {
+  document.getElementById('finished-overlay').classList.add('visible');
+  document.getElementById('btn-start').disabled = true;
+  document.getElementById('btn-pause').disabled = true;
+  document.getElementById('btn-stop').disabled = true;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// APP CONTROLS
+// ═══════════════════════════════════════════════════════════════
+function startWorkout() {
+  ensureAudio();
+  if (appState !== STATE.IDLE) return;
+  createWorker();
+
+  session = {
+    currentRound: 1,
+    stateTimeLeft: config.prepTime * 1000,
+    totalElapsed: 0,
+    combosThrown: 0,
+    punchesThrown: 0,
+    nextComboIn: 99999,
+    paused: false,
+    pausedState: null,
+    lastComboId: null,
+  };
+
+  appState = STATE.PREP;
+  updateHeaderState();
+  updateStats();
+
+  document.getElementById('idle-screen').style.display = 'none';
+  const ui = document.getElementById('training-ui');
+  ui.style.display = 'flex';
+
+  document.getElementById('btn-start').disabled = true;
+  document.getElementById('btn-pause').disabled = false;
+  document.getElementById('btn-stop').disabled = false;
+
+  // Lock config during training
+  document.querySelectorAll('#sidebar input, #sidebar .select-btn').forEach(el => el.disabled = true);
+
+  updateTimerUI();
+  speak('Preparación. El entrenamiento comenzará en diez segundos. Ajusta los guantes.');
+  worker.postMessage({ action: 'START' });
+}
+
+function pauseResume() {
+  if (appState === STATE.FINISHED || appState === STATE.IDLE) return;
+  if (session.paused) {
+    session.paused = false;
+    appState = session.pausedState;
+    document.getElementById('btn-pause').textContent = '⏸ PAUSA';
+    worker.postMessage({ action: 'START' });
+    speak('Reanudando');
+    updateHeaderState();
+  } else {
+    session.paused = true;
+    session.pausedState = appState;
+    appState = STATE.PAUSED;
+    worker.postMessage({ action: 'PAUSE' });
+    document.getElementById('btn-pause').textContent = '▶ REANUDAR';
+    window.speechSynthesis.cancel();
+    speak('Pausa');
+    updateHeaderState();
+  }
+}
+
+function stopWorkout() {
+  if (worker) { worker.postMessage({ action: 'RESET' }); worker.terminate(); worker = null; }
+  window.speechSynthesis.cancel();
+  resetApp();
+}
+
+function resetApp() {
+  appState = STATE.IDLE;
+  session.paused = false;
+
+  document.getElementById('finished-overlay').classList.remove('visible');
+  document.getElementById('idle-screen').style.display = 'flex';
+  document.getElementById('training-ui').style.display = 'none';
+
+  document.getElementById('btn-start').disabled = false;
+  document.getElementById('btn-pause').disabled = true;
+  document.getElementById('btn-pause').textContent = '⏸ PAUSA';
+  document.getElementById('btn-stop').disabled = true;
+
+  document.querySelectorAll('#sidebar input, #sidebar .select-btn').forEach(el => el.disabled = false);
+  // Re-highlight active level
+  document.querySelectorAll('.select-btn[data-level]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.level === config.level);
+  });
+
+  document.getElementById('hdr-round').textContent = '–';
+  document.getElementById('hdr-state').className = 'state-pill';
+  document.getElementById('hdr-state').textContent = 'Listo';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// HISTORY (localStorage)
+// ═══════════════════════════════════════════════════════════════
+function saveHistory() {
+  const history = JSON.parse(localStorage.getItem('hbt_history') || '[]');
+  history.unshift({
+    date: new Date().toLocaleDateString('es-ES', {day:'2-digit',month:'2-digit'}),
+    rounds: config.rounds,
+    level: config.level,
+    combos: session.combosThrown,
+    punches: session.punchesThrown,
+  });
+  if (history.length > 10) history.pop();
+  localStorage.setItem('hbt_history', JSON.stringify(history));
+  renderHistory();
+}
+
+function renderHistory() {
+  const history = JSON.parse(localStorage.getItem('hbt_history') || '[]');
+  const el = document.getElementById('history-list');
+  if (!history.length) {
+    el.innerHTML = '<div class="empty-history">Sin entrenamientos aún</div>';
+    return;
+  }
+  const lvlMap = { beginner:'Princ.', intermediate:'Inter.', advanced:'Avanz.' };
+  el.innerHTML = history.map(h => `
+    <div class="history-item">
+      <span class="history-date">${h.date}</span>
+      <span class="history-info">${h.rounds}R · ${h.combos} combos</span>
+      <span class="history-badge">${lvlMap[h.level]||h.level}</span>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CONFIG BINDINGS
+// ═══════════════════════════════════════════════════════════════
+document.getElementById('sl-rounds').addEventListener('input', function() {
+  config.rounds = parseInt(this.value);
+  document.getElementById('val-rounds').textContent = config.rounds;
+});
+
+document.getElementById('sl-round-time').addEventListener('input', function() {
+  const v = parseFloat(this.value);
+  config.roundTime = v * 60;
+  document.getElementById('val-round-time').textContent =
+    v === Math.floor(v) ? `${v} min` : `${v} min`;
+});
+
+document.getElementById('sl-rest-time').addEventListener('input', function() {
+  const v = parseFloat(this.value);
+  config.restTime = v * 60;
+  document.getElementById('val-rest-time').textContent = `${v} min`;
+});
+
+document.getElementById('sl-combo-interval').addEventListener('input', function() {
+  config.comboInterval = parseInt(this.value);
+  document.getElementById('val-combo-interval').textContent = `${config.comboInterval} s`;
+});
+
+document.getElementById('sl-speech-rate').addEventListener('input', function() {
+  config.speechRate = parseFloat(this.value);
+  document.getElementById('val-speech-rate').textContent = `${config.speechRate.toFixed(1)}×`;
+});
+
+document.querySelectorAll('.select-btn[data-level]').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.select-btn[data-level]').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    config.level = this.dataset.level;
+  });
+});
+
+// Toggle speech
+document.getElementById('toggle-speech').addEventListener('click', function() {
+  config.speechEnabled = !config.speechEnabled;
+  this.classList.toggle('on', config.speechEnabled);
+});
+
+// Toggle bell
+document.getElementById('toggle-bell').addEventListener('click', function() {
+  config.bellEnabled = !config.bellEnabled;
+  this.classList.toggle('on', config.bellEnabled);
+});
+
+// Buttons
+document.getElementById('btn-start').addEventListener('click', startWorkout);
+document.getElementById('btn-pause').addEventListener('click', pauseResume);
+document.getElementById('btn-stop').addEventListener('click', stopWorkout);
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); appState === STATE.IDLE ? startWorkout() : pauseResume(); }
+  if (e.code === 'Escape') { if (appState !== STATE.IDLE) stopWorkout(); }
+});
+
+// Init
+renderHistory();
+</script>
+</body>
+</html>
