@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0F1012">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Tactical Bag Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:            #0F1012;
+  --surface:       #1C1E21;
+  --surface-2:     #272A2E;
+  --surface-3:     #323539;
+  --text-main:     #EDEDED;
+  --text-muted:    #808080;
+  --text-faint:    #444;
+  --accent-red:    #E8372A;
+  --accent-red-dim: rgba(232,55,42,0.15);
+  --accent-green:  #3DB87A;
+  --accent-green-dim: rgba(61,184,122,0.15);
+  --accent-gold:   #F5C842;
+  --accent-gold-dim: rgba(245,200,66,0.15);
+  --accent-blue:   #4A9EFF;
+  --border:        rgba(255,255,255,0.06);
+  --border-strong: rgba(255,255,255,0.12);
+  --shadow:        0 8px 32px rgba(0,0,0,0.45);
+  --radius-card:   18px;
+  --radius-pill:   10px;
+  --radius-chip:   10px;
+  --transition:    0.22s cubic-bezier(0.4,0,0.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;user-select:none;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text-main);overflow:hidden;height:100vh;height:100dvh;}
+.view{display:none;flex-direction:column;height:100%;width:100%;}
+.view.active{display:flex;}
+
+/* SETTINGS */
+#view-settings{overflow-y:auto;padding:0 20px 120px;-webkit-overflow-scrolling:touch;}
+#view-settings::-webkit-scrollbar{display:none;}
+.settings-header{display:flex;align-items:center;justify-content:space-between;padding:22px 0 18px;}
+.app-logo{display:flex;flex-direction:column;gap:2px;}
+.app-logo .wordmark{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;letter-spacing:3px;text-transform:uppercase;color:var(--text-main);line-height:1;}
+.app-logo .wordmark span{color:var(--accent-red);}
+.app-logo .tagline{font-size:10px;letter-spacing:2.5px;color:var(--text-muted);text-transform:uppercase;}
+.streak-badge{display:flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border-strong);border-radius:20px;padding:8px 14px;cursor:pointer;}
+.streak-badge .fire{font-size:18px;}
+.streak-badge .streak-count{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:var(--accent-gold);line-height:1;}
+.streak-badge .streak-label{font-size:9px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;line-height:1;}
+.config-card{background:var(--surface);border-radius:var(--radius-card);padding:20px;margin-bottom:16px;border:1px solid var(--border);}
+.config-card-title{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);margin-bottom:18px;font-weight:600;}
+.slider-group{margin-bottom:20px;}
+.slider-group:last-child{margin-bottom:0;}
+.label-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;}
+.label-row label{font-size:14px;font-weight:500;color:var(--text-main);}
+.label-row .val{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;color:var(--accent-gold);line-height:1;}
+.label-row .val-unit{font-size:11px;color:var(--text-muted);margin-left:2px;}
+input[type="range"]{width:100%;-webkit-appearance:none;background:var(--surface-3);height:5px;border-radius:3px;outline:none;}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;background:var(--accent-red);border-radius:50%;cursor:pointer;box-shadow:0 0 0 4px rgba(232,55,42,0.2);}
+.pill-container{display:flex;gap:8px;flex-wrap:wrap;}
+.pill{flex:1;min-width:72px;padding:10px 8px;text-align:center;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-pill);font-size:12px;font-weight:600;color:var(--text-muted);transition:var(--transition);letter-spacing:0.5px;}
+.pill.active{background:var(--accent-red-dim);border-color:var(--accent-red);color:var(--text-main);}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-top:1px solid var(--border);}
+.toggle-row:first-of-type{border-top:none;}
+.toggle-info{display:flex;flex-direction:column;gap:2px;}
+.toggle-label{font-size:14px;font-weight:500;}
+.toggle-sub{font-size:11px;color:var(--text-muted);}
+.switch{position:relative;width:46px;height:26px;background:var(--surface-3);border-radius:13px;transition:var(--transition);flex-shrink:0;}
+.switch.on{background:var(--accent-red);}
+.switch-thumb{position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:var(--transition);box-shadow:0 1px 4px rgba(0,0,0,0.3);}
+.switch.on .switch-thumb{transform:translateX(20px);}
+.spike-config{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--surface-2);border-radius:10px;border:1px solid var(--border);margin-top:12px;}
+.spike-config-icon{font-size:20px;}
+.spike-config-text{flex:1;}
+.spike-config-text .sct{font-size:13px;font-weight:500;}
+.spike-config-text .scs{font-size:11px;color:var(--text-muted);}
+.custom-combo-section{margin-top:14px;}
+.custom-combo-hint{font-size:11px;color:var(--text-muted);margin-bottom:10px;}
+.custom-combo-builder{display:flex;flex-wrap:wrap;gap:7px;min-height:46px;background:var(--surface-2);border:1px dashed var(--border-strong);border-radius:10px;padding:10px;margin-bottom:10px;align-items:center;}
+.custom-combo-builder:empty::before{content:'Toca golpes para añadir…';color:var(--text-faint);font-size:12px;}
+.cc-chip{background:var(--surface-3);border:1px solid var(--border-strong);border-radius:6px;padding:5px 9px;font-size:13px;font-weight:700;color:var(--text-main);}
+.strike-picker{display:flex;flex-wrap:wrap;gap:7px;}
+.sp-btn{background:var(--surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;color:var(--text-muted);transition:var(--transition);display:flex;flex-direction:column;align-items:center;gap:2px;min-width:50px;}
+.sp-btn .sp-n{font-size:16px;font-weight:800;color:var(--text-main);}
+.sp-btn .sp-s{font-size:9px;letter-spacing:0.5px;}
+.sp-btn:active{background:var(--surface-3);border-color:var(--accent-red);}
+.cc-actions{display:flex;gap:8px;}
+.cc-clear-btn,.cc-save-btn{flex:1;padding:10px;border-radius:8px;font-size:12px;font-weight:700;letter-spacing:0.5px;border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text-muted);}
+.cc-save-btn{background:var(--accent-red-dim);border-color:var(--accent-red);color:var(--text-main);}
+.saved-combo-list{margin-top:10px;display:flex;flex-direction:column;gap:7px;}
+.saved-combo-item{display:flex;align-items:center;justify-content:space-between;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:9px 12px;font-size:13px;}
+.saved-combo-chips{display:flex;gap:5px;flex-wrap:wrap;}
+.scc{font-weight:700;font-size:13px;color:var(--text-main);}
+.saved-combo-del{font-size:16px;color:var(--text-muted);padding:4px 6px;margin-left:8px;line-height:1;}
+.fab-container{position:fixed;bottom:0;left:0;width:100%;padding:20px;background:linear-gradient(to top,var(--bg) 60%,transparent);z-index:50;}
+.fab-btn{width:100%;padding:17px;border:none;border-radius:14px;background:var(--accent-red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:3px;box-shadow:0 4px 20px rgba(232,55,42,0.35);transition:var(--transition);}
+.fab-btn:active{transform:scale(0.98);opacity:0.9;}
+
+/* ARENA */
+#view-arena{align-items:center;justify-content:space-between;padding:0 20px;position:relative;}
+#phase-flash{position:absolute;inset:0;pointer-events:none;opacity:0;z-index:200;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:64px;letter-spacing:6px;color:#fff;transition:none;}
+#phase-flash.flash-work{animation:flashWork 0.6s ease-out forwards;background:radial-gradient(ellipse at center,rgba(232,55,42,0.35) 0%,transparent 70%);}
+#phase-flash.flash-rest{animation:flashRest 0.6s ease-out forwards;background:radial-gradient(ellipse at center,rgba(61,184,122,0.35) 0%,transparent 70%);}
+#phase-flash.flash-done{animation:flashDone 0.8s ease-out forwards;background:radial-gradient(ellipse at center,rgba(245,200,66,0.35) 0%,transparent 70%);}
+@keyframes flashWork{0%{opacity:1;transform:scale(1.15);}100%{opacity:0;transform:scale(1);}}
+@keyframes flashRest{0%{opacity:1;transform:scale(1.1);}100%{opacity:0;transform:scale(1);}}
+@keyframes flashDone{0%{opacity:1;transform:scale(1.2);}60%{opacity:1;}100%{opacity:0;transform:scale(1);}}
+.arena-top{width:100%;padding-top:22px;display:flex;flex-direction:column;align-items:center;gap:8px;}
+.round-track{display:flex;gap:5px;align-items:center;}
+.round-dot{width:8px;height:8px;border-radius:50%;background:var(--surface-3);transition:var(--transition);}
+.round-dot.done{background:var(--text-muted);}
+.round-dot.current{background:var(--accent-red);box-shadow:0 0 8px var(--accent-red);width:10px;height:10px;}
+.status-badge{display:inline-block;padding:5px 16px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;transition:var(--transition);background:var(--surface-2);color:var(--text-muted);}
+.status-badge.work{background:var(--accent-red-dim);color:var(--accent-red);}
+.status-badge.rest{background:var(--accent-green-dim);color:var(--accent-green);}
+.status-badge.prep{background:var(--accent-gold-dim);color:var(--accent-gold);}
+.ring-container{position:relative;width:240px;height:240px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ring-svg{position:absolute;inset:0;transform:rotate(-90deg);}
+.ring-track{fill:none;stroke:var(--surface-2);stroke-width:6;}
+.ring-progress{fill:none;stroke:var(--accent-red);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset 0.9s linear,stroke 0.3s;}
+.ring-progress.green{stroke:var(--accent-green);}
+.ring-progress.gold{stroke:var(--accent-gold);}
+.ring-glow{fill:none;stroke:var(--accent-red);stroke-width:10;opacity:0.12;stroke-linecap:round;transition:stroke 0.3s;filter:blur(3px);}
+.ring-glow.green{stroke:var(--accent-green);}
+.ring-glow.gold{stroke:var(--accent-gold);}
+.ring-inner{display:flex;flex-direction:column;align-items:center;z-index:1;}
+.timer-display{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:72px;line-height:1;letter-spacing:-1px;font-variant-numeric:tabular-nums;color:var(--text-main);transition:color 0.3s;}
+.timer-display.red{color:var(--accent-red);}
+.timer-display.green{color:var(--accent-green);}
+.timer-display.gold{color:var(--accent-gold);}
+.timer-pulse{position:absolute;inset:8px;border-radius:50%;background:transparent;pointer-events:none;}
+.timer-pulse.pulsing{animation:timerPulse 1s ease-in-out infinite;}
+@keyframes timerPulse{0%,100%{box-shadow:inset 0 0 0 0 rgba(232,55,42,0);}50%{box-shadow:inset 0 0 28px 4px rgba(232,55,42,0.08);}}
+.combo-zone{width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;min-height:130px;}
+.combo-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;letter-spacing:2px;color:var(--text-muted);text-transform:uppercase;min-height:18px;}
+.combo-chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;}
+.combo-chips.animate-in{animation:popIn 0.28s cubic-bezier(0.175,0.885,0.32,1.275) forwards;}
+@keyframes popIn{0%{opacity:0;transform:translateY(12px) scale(0.88);}100%{opacity:1;transform:translateY(0) scale(1);}}
+.chip{background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--radius-chip);padding:12px 14px;display:flex;flex-direction:column;align-items:center;min-width:60px;box-shadow:0 4px 12px rgba(0,0,0,0.25);}
+.chip .num{font-size:30px;font-weight:800;color:var(--text-main);line-height:1;margin-bottom:4px;}
+.chip .hand{font-size:9px;font-weight:700;color:var(--text-muted);letter-spacing:1.5px;}
+.chip.defense{border-color:var(--surface-3);}
+.chip.defense .num{color:var(--text-muted);font-size:20px;padding:4px 0;}
+.chip.spike{background:var(--accent-gold-dim);border-color:var(--accent-gold);}
+.chip.spike .num{color:var(--accent-gold);font-size:18px;font-weight:900;}
+.combo-log{display:flex;flex-direction:column;gap:5px;width:100%;max-height:52px;overflow:hidden;align-items:center;}
+.combo-log-entry{font-size:11px;color:var(--text-faint);letter-spacing:1px;transition:opacity 0.3s;}
+.combo-log-entry:last-child{color:var(--text-muted);}
+.bottom-controls{width:100%;padding-bottom:26px;display:flex;flex-direction:column;gap:10px;}
+.ctrl-row{display:flex;gap:12px;}
+.ctrl-btn{flex:1;padding:14px;border-radius:12px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text-main);font-size:13px;font-weight:700;letter-spacing:1px;transition:var(--transition);}
+.ctrl-btn:active{background:var(--surface-2);}
+.ctrl-btn.stop{color:var(--accent-red);border-color:rgba(232,55,42,0.25);}
+.ctrl-btn.skip{color:var(--accent-blue);border-color:rgba(74,158,255,0.25);}
+
+/* FINISHED */
+#view-finished{justify-content:center;align-items:center;padding:30px 24px;gap:0;}
+.finished-glow{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:52px;letter-spacing:4px;color:var(--accent-gold);line-height:1;margin-bottom:6px;text-shadow:0 0 40px rgba(245,200,66,0.3);}
+.finished-sub{font-size:13px;color:var(--text-muted);letter-spacing:1px;margin-bottom:32px;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;margin-bottom:28px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:4px;}
+.stat-val{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:36px;line-height:1;color:var(--text-main);}
+.stat-val.gold{color:var(--accent-gold);}
+.stat-val.red{color:var(--accent-red);}
+.stat-val.green{color:var(--accent-green);}
+.stat-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);font-weight:600;}
+.personal-best-badge{width:100%;padding:12px 16px;background:var(--accent-gold-dim);border:1px solid var(--accent-gold);border-radius:12px;text-align:center;font-size:12px;font-weight:700;color:var(--accent-gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:20px;display:none;}
+.personal-best-badge.show{display:block;}
+.finished-actions{display:flex;gap:12px;width:100%;}
+.btn-again{flex:1;padding:15px;border:none;border-radius:12px;background:var(--accent-red);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;letter-spacing:2px;box-shadow:0 4px 16px rgba(232,55,42,0.3);}
+.btn-menu{flex:1;padding:15px;border-radius:12px;border:1px solid var(--border-strong);background:var(--surface);color:var(--text-main);font-size:13px;font-weight:700;letter-spacing:1px;}
+
+/* HISTORY MODAL */
+#modal-history{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.8);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;}
+#modal-history.open{display:flex;}
+.modal-sheet{width:100%;max-height:85vh;background:var(--surface);border-radius:22px 22px 0 0;padding:10px 20px 40px;overflow-y:auto;animation:slideUp 0.3s cubic-bezier(0.4,0,0.2,1);}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal-handle{width:40px;height:4px;background:var(--surface-3);border-radius:2px;margin:12px auto 20px;}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;letter-spacing:2px;margin-bottom:16px;}
+.history-list{display:flex;flex-direction:column;gap:10px;}
+.history-item{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;align-items:center;justify-content:space-between;}
+.hi-date{font-size:12px;color:var(--text-muted);margin-bottom:4px;}
+.hi-detail{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:1px;}
+.hi-right{text-align:right;}
+.hi-combos{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;color:var(--accent-red);line-height:1;}
+.hi-combos-label{font-size:9px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;}
+.history-empty{text-align:center;color:var(--text-muted);padding:40px 0;font-size:14px;}
+.section-sep{height:1px;background:var(--border);margin:4px 0;}
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="view-settings" class="view active">
+  <div class="settings-header">
+    <div class="app-logo">
+      <div class="wordmark">TACTICAL <span>BAG</span></div>
+      <div class="tagline">Motor de Combate Pro</div>
+    </div>
+    <div class="streak-badge" onclick="openHistory()">
+      <span class="fire">🔥</span>
+      <div>
+        <div class="streak-count" id="streak-count">0</div>
+        <div class="streak-label">Días</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="config-card">
+    <div class="config-card-title">Estructura del Combate</div>
+    <div class="slider-group">
+      <div class="label-row"><label>Asaltos</label><div><span class="val" id="lbl-rounds">3</span></div></div>
+      <input type="range" id="sl-rounds" min="1" max="12" value="3">
+    </div>
+    <div class="slider-group">
+      <div class="label-row"><label>Tiempo por asalto</label><div><span class="val" id="lbl-work">3:00</span><span class="val-unit">min</span></div></div>
+      <input type="range" id="sl-work" min="0.5" max="5" step="0.5" value="3">
+    </div>
+    <div class="slider-group">
+      <div class="label-row"><label>Descanso</label><div><span class="val" id="lbl-rest">60</span><span class="val-unit">seg</span></div></div>
+      <input type="range" id="sl-rest" min="15" max="120" step="15" value="60">
+    </div>
+  </div>
+
+  <div class="config-card">
+    <div class="config-card-title">Motor Biomecánico</div>
+    <div class="slider-group">
+      <div class="label-row"><label>Guardia</label></div>
+      <div class="pill-container" id="grp-stance">
+        <div class="pill active" data-val="orthodox">Diestro</div>
+        <div class="pill" data-val="southpaw">Zurdo</div>
+      </div>
+    </div>
+    <div class="slider-group" style="margin-top:14px">
+      <div class="label-row"><label>Nivel Técnico</label></div>
+      <div class="pill-container" id="grp-level">
+        <div class="pill active" data-val="beginner">Básico</div>
+        <div class="pill" data-val="intermediate">Medio</div>
+        <div class="pill" data-val="advanced">Avanzado</div>
+        <div class="pill" data-val="custom">Custom</div>
+      </div>
+    </div>
+    <div class="slider-group" style="margin-top:14px">
+      <div class="label-row"><label>Frecuencia de Combos</label></div>
+      <div class="pill-container" id="grp-freq">
+        <div class="pill" data-val="12">Pausa</div>
+        <div class="pill active" data-val="8">Fluido</div>
+        <div class="pill" data-val="4">Presión</div>
+      </div>
+    </div>
+    <div class="custom-combo-section" id="custom-builder" style="display:none">
+      <div class="section-sep" style="margin:16px 0 14px"></div>
+      <div class="config-card-title" style="margin-bottom:8px">Constructor de Combos</div>
+      <div class="custom-combo-hint">Crea tus propias secuencias personalizadas.</div>
+      <div class="custom-combo-builder" id="cc-preview"></div>
+      <div class="strike-picker">
+        <button class="sp-btn" onclick="ccAdd('1')"><span class="sp-n">1</span><span class="sp-s">JAB</span></button>
+        <button class="sp-btn" onclick="ccAdd('2')"><span class="sp-n">2</span><span class="sp-s">DIRECTO</span></button>
+        <button class="sp-btn" onclick="ccAdd('3')"><span class="sp-n">3</span><span class="sp-s">CROCHET</span></button>
+        <button class="sp-btn" onclick="ccAdd('4')"><span class="sp-n">4</span><span class="sp-s">UPPER</span></button>
+        <button class="sp-btn" onclick="ccAdd('5')"><span class="sp-n">5</span><span class="sp-s">HOOK IZQ</span></button>
+        <button class="sp-btn" onclick="ccAdd('6')"><span class="sp-n">6</span><span class="sp-s">UPPER IZQ</span></button>
+        <button class="sp-btn" onclick="ccAdd('1b')"><span class="sp-n">1↓</span><span class="sp-s">JAB CUERPO</span></button>
+        <button class="sp-btn" onclick="ccAdd('2b')"><span class="sp-n">2↓</span><span class="sp-s">DIR CUERPO</span></button>
+        <button class="sp-btn" onclick="ccAdd('SL')"><span class="sp-n">SL</span><span class="sp-s">SLIP</span></button>
+        <button class="sp-btn" onclick="ccAdd('RL')"><span class="sp-n">RL</span><span class="sp-s">ROLL</span></button>
+        <button class="sp-btn" onclick="ccAdd('PV')"><span class="sp-n">PV</span><span class="sp-s">PIVOT</span></button>
+        <button class="sp-btn" onclick="ccAdd('F1')"><span class="sp-n">F1</span><span class="sp-s">FINTA</span></button>
+      </div>
+      <div class="cc-actions" style="margin-top:10px">
+        <button class="cc-clear-btn" onclick="ccClear()">LIMPIAR</button>
+        <button class="cc-save-btn" onclick="ccSave()">GUARDAR COMBO</button>
+      </div>
+      <div class="saved-combo-list" id="saved-combo-list"></div>
+    </div>
+  </div>
+
+  <div class="config-card">
+    <div class="config-card-title">Acondicionamiento</div>
+    <div class="toggle-row" onclick="toggleSwitch('sw-spikes')">
+      <div class="toggle-info">
+        <span class="toggle-label">Spikes de Condicionamiento</span>
+        <span class="toggle-sub">Burpees, sentadillas y sprawls durante combate</span>
+      </div>
+      <div class="switch" id="sw-spikes"><div class="switch-thumb"></div></div>
+    </div>
+    <div class="spike-config" id="spike-level-cfg" style="display:none">
+      <span class="spike-config-icon">⚡</span>
+      <div class="spike-config-text">
+        <div class="sct">Probabilidad de spike</div>
+        <div class="scs">Disponible en todos los niveles</div>
+      </div>
+      <div class="pill-container" id="grp-spike-prob" style="flex:0;gap:5px">
+        <div class="pill" data-val="0.08" style="min-width:48px;padding:7px 6px;font-size:11px">Suave</div>
+        <div class="pill active" data-val="0.15" style="min-width:48px;padding:7px 6px;font-size:11px">Medio</div>
+        <div class="pill" data-val="0.25" style="min-width:48px;padding:7px 6px;font-size:11px">Duro</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="config-card">
+    <div class="config-card-title">Experiencia Sensorial</div>
+    <div class="toggle-row" onclick="toggleSwitch('sw-voice')">
+      <div class="toggle-info">
+        <span class="toggle-label">Coach de Voz</span>
+        <span class="toggle-sub">Dicta cada combo en español</span>
+      </div>
+      <div class="switch on" id="sw-voice"><div class="switch-thumb"></div></div>
+    </div>
+    <div class="toggle-row" onclick="toggleSwitch('sw-haptic')">
+      <div class="toggle-info">
+        <span class="toggle-label">Vibración Háptica</span>
+        <span class="toggle-sub">Feedback táctil en cambios de fase</span>
+      </div>
+      <div class="switch on" id="sw-haptic"><div class="switch-thumb"></div></div>
+    </div>
+    <div class="toggle-row" onclick="toggleSwitch('sw-cardio')">
+      <div class="toggle-info">
+        <span class="toggle-label">Modo Cardio Libre</span>
+        <span class="toggle-sub">Solo temporizador, sin combos</span>
+      </div>
+      <div class="switch" id="sw-cardio"><div class="switch-thumb"></div></div>
+    </div>
+  </div>
+
+  <div class="fab-container">
+    <button class="fab-btn" onclick="startWorkout()">INICIAR SESIÓN</button>
+  </div>
+</div>
+
+<!-- ARENA -->
+<div id="view-arena" class="view">
+  <div id="phase-flash"></div>
+  <div class="timer-pulse" id="timer-pulse"></div>
+
+  <div class="arena-top">
+    <div class="round-track" id="round-track"></div>
+    <div class="status-badge prep" id="arena-status">PREPARACIÓN</div>
+  </div>
+
+  <div class="ring-container">
+    <svg class="ring-svg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+      <circle class="ring-track"    cx="120" cy="120" r="108"/>
+      <circle class="ring-glow"     cx="120" cy="120" r="108" id="ring-glow"    stroke-dasharray="678.6" stroke-dashoffset="0"/>
+      <circle class="ring-progress" cx="120" cy="120" r="108" id="ring-progress" stroke-dasharray="678.6" stroke-dashoffset="0"/>
+    </svg>
+    <div class="ring-inner">
+      <div class="timer-display gold" id="arena-timer">0:00</div>
+    </div>
+  </div>
+
+  <div class="combo-zone">
+    <div class="combo-name" id="combo-name"></div>
+    <div class="combo-chips" id="combo-chips"></div>
+    <div class="combo-log" id="combo-log"></div>
+  </div>
+
+  <div class="bottom-controls">
+    <div class="ctrl-row">
+      <button class="ctrl-btn" id="btn-pause" onclick="pauseResume()">PAUSAR</button>
+      <button class="ctrl-btn skip" onclick="skipPhase()">SALTAR</button>
+      <button class="ctrl-btn stop" onclick="confirmStop()">SALIR</button>
+    </div>
+  </div>
+</div>
+
+<!-- FINISHED -->
+<div id="view-finished" class="view">
+  <div class="finished-glow">¡COMPLETADO!</div>
+  <div class="finished-sub">Gran trabajo en el saco hoy.</div>
+  <div class="personal-best-badge" id="pb-badge">🏆 Nuevo récord de combos</div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-val red" id="stat-combos">0</div><div class="stat-label">Combos ejecutados</div></div>
+    <div class="stat-card"><div class="stat-val" id="stat-rounds">0</div><div class="stat-label">Asaltos completados</div></div>
+    <div class="stat-card"><div class="stat-val green" id="stat-time">0:00</div><div class="stat-label">Tiempo total</div></div>
+    <div class="stat-card"><div class="stat-val gold" id="stat-streak">0</div><div class="stat-label">Días seguidos 🔥</div></div>
+  </div>
+  <div class="finished-actions">
+    <button class="btn-again" onclick="startWorkout()">OTRA VEZ</button>
+    <button class="btn-menu" onclick="resetApp()">MENÚ</button>
+  </div>
+</div>
+
+<!-- HISTORY MODAL -->
+<div id="modal-history">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Historial de Sesiones</div>
+    <div class="history-list" id="history-list"></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// AUDIO
+let audioCtx = null;
+function getAudioCtx(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function beep(freq,duration,vol,type='sine'){
+  try{
+    const ctx=getAudioCtx();if(ctx.state==='suspended')ctx.resume();
+    const osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.frequency.value=freq;osc.type=type;
+    gain.gain.setValueAtTime(vol,ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+duration);
+    osc.start();osc.stop(ctx.currentTime+duration);
+  }catch(e){}
+}
+function playBell(){beep(880,0.8,0.6,'triangle');setTimeout(()=>beep(1100,0.5,0.4,'triangle'),80);}
+function playTone(type){
+  if(type==='start'){playBell();}
+  else if(type==='end'){beep(880,0.3,0.5,'triangle');setTimeout(()=>beep(660,0.4,0.5,'triangle'),300);setTimeout(()=>beep(440,0.6,0.4,'triangle'),600);}
+  else if(type==='tick'){beep(1000,0.06,0.08);}
+  else if(type==='finish'){playBell();setTimeout(playBell,900);setTimeout(playBell,1800);}
+}
+
+// WAKE LOCK
+let wakeLock=null;
+async function requestWakeLock(){try{if('wakeLock'in navigator)wakeLock=await navigator.wakeLock.request('screen');}catch(e){}}
+function releaseWakeLock(){if(wakeLock){wakeLock.release();wakeLock=null;}}
+document.addEventListener('visibilitychange',()=>{if(wakeLock!==null&&document.visibilityState==='visible')requestWakeLock();});
+
+// STATE & CONFIG
+let config={rounds:3,work:180,rest:60,stance:'orthodox',level:'beginner',freq:8,voice:true,haptic:true,cardioMode:false,spikes:false,spikeProb:0.15};
+let state={status:'IDLE',round:1,timeRemaining:0,totalDuration:0,intervalId:null,comboTimeoutId:null,isPaused:false,combosThisSession:0,sessionStartTime:0,comboLog:[]};
+let customComboCurrent=[];
+let customCombos=loadFromStorage('tbp_custom_combos')||[];
+
+// STORAGE
+function saveToStorage(key,val){try{localStorage.setItem(key,JSON.stringify(val));}catch(e){}}
+function loadFromStorage(key){try{const v=localStorage.getItem(key);return v?JSON.parse(v):null;}catch(e){return null;}}
+
+// STREAK
+function getStreak(){
+  const history=loadFromStorage('tbp_history')||[];
+  if(!history.length)return 0;
+  const today=new Date().toDateString();
+  const dates=[...new Set(history.map(h=>new Date(h.ts).toDateString()))].reverse();
+  if(dates[0]!==today&&dates[0]!==new Date(Date.now()-86400000).toDateString())return 0;
+  let streak=0,cursor=new Date();
+  if(dates[0]===today){streak=1;cursor=new Date(Date.now()-86400000);dates.shift();}
+  for(const d of dates){if(d===cursor.toDateString()){streak++;cursor=new Date(cursor-86400000);}else break;}
+  return streak;
+}
+function updateStreakDisplay(){document.getElementById('streak-count').innerText=getStreak();}
+function saveSession(combos,rounds,totalSecs){
+  const history=loadFromStorage('tbp_history')||[];
+  history.push({ts:Date.now(),combos,rounds,totalSecs,level:config.level});
+  saveToStorage('tbp_history',history);
+  updateStreakDisplay();
+}
+
+function openHistory(){
+  const modal=document.getElementById('modal-history');
+  const list=document.getElementById('history-list');
+  const history=(loadFromStorage('tbp_history')||[]).slice().reverse();
+  if(!history.length){
+    list.innerHTML='<div class="history-empty">Aún no hay sesiones registradas.<br>¡Completa tu primera sesión!</div>';
+  }else{
+    const lvlMap={beginner:'Básico',intermediate:'Medio',advanced:'Avanzado',custom:'Custom'};
+    list.innerHTML=history.slice(0,30).map(h=>{
+      const d=new Date(h.ts);
+      const dateStr=d.toLocaleDateString('es-ES',{weekday:'short',day:'numeric',month:'short'});
+      const timeStr=d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
+      const min=Math.floor(h.totalSecs/60),sec=h.totalSecs%60;
+      return`<div class="history-item">
+        <div><div class="hi-date">${dateStr} · ${timeStr}</div><div class="hi-detail">${h.rounds} asalto${h.rounds>1?'s':''} · ${min}:${sec<10?'0':''}${sec} · ${lvlMap[h.level]||h.level}</div></div>
+        <div class="hi-right"><div class="hi-combos">${h.combos}</div><div class="hi-combos-label">combos</div></div>
+      </div>`;
+    }).join('');
+  }
+  modal.classList.add('open');
+  modal.onclick=e=>{if(e.target===modal)modal.classList.remove('open');};
+}
+
+// STRIKES & COMBOS
+const STRIKES={
+  '1':{n:'1',h:0,s:'Jab',def:false},'2':{n:'2',h:1,s:'Directo',def:false},
+  '3':{n:'3',h:0,s:'Crochet',def:false},'4':{n:'4',h:1,s:'Uppercut',def:false},
+  '5':{n:'5',h:0,s:'Hook izquierdo',def:false},'6':{n:'6',h:0,s:'Upper izquierdo',def:false},
+  '1b':{n:'1↓',h:0,s:'Jab al cuerpo',def:false},'2b':{n:'2↓',h:1,s:'Directo al cuerpo',def:false},
+  '3b':{n:'3↓',h:0,s:'Crochet al cuerpo',def:false},
+  'SL':{n:'SL',h:null,s:'Slip',def:true},'RL':{n:'RL',h:null,s:'Roll',def:true},
+  'PV':{n:'PV',h:null,s:'Pivot',def:true},'F1':{n:'F1',h:null,s:'Finta',def:true}
+};
+const COMBOS_DB={
+  beginner:[
+    {name:'Clásico',seq:['1','2']},{name:'Jab doble',seq:['1','1','2']},
+    {name:'Trinidad',seq:['1','2','3']},{name:'Rebote',seq:['1','2','1']},
+    {name:'Cuerpo-cabeza',seq:['1','2b']},{name:'Uppercut corto',seq:['2','4']},
+    {name:'Básico cuerpo',seq:['1b','2']}
+  ],
+  intermediate:[
+    {name:'Slip y pega',seq:['1','2','SL','2']},{name:'Cuerpo-cabeza-cuerpo',seq:['1b','2','3']},
+    {name:'Roll y zurdo',seq:['1','2','RL','3']},{name:'Contragolpe',seq:['2','3','2']},
+    {name:'Cuerpo doble',seq:['1','2','3b','3']},{name:'Hook largo',seq:['1','2','5']},
+    {name:'Triple jab',seq:['1','1','1','2']}
+  ],
+  advanced:[
+    {name:'Finta y cuerpo',seq:['F1','2b','3']},{name:'Pivot y golpe',seq:['1','PV','2','3','2']},
+    {name:'Roll combo',seq:['1','2','3','RL','2']},{name:'Esquiva total',seq:['1','SL','2','RL','3','2']},
+    {name:'Uppercut-Hook',seq:['2','4','5']},{name:'Máquina',seq:['1','2','1','2','3']},
+    {name:'Cuerpo triple',seq:['1b','2b','3b','2']}
+  ]
+};
+const SPIKES=[
+  {n:'SPRAWL',s:'Sprawl'},{n:'10 SQUATS',s:'Diez sentadillas'},
+  {n:'BURPEE',s:'Burpee'},{n:'5 PUSH',s:'Cinco flexiones'},{n:'SALTA',s:'Salto al frente'}
+];
+
+function getHandText(h){
+  if(h===null)return'';
+  if(config.stance==='orthodox')return h===0?'IZQ':'DER';
+  return h===0?'DER':'IZQ';
+}
+
+// CUSTOM COMBOS
+function ccAdd(id){if(customComboCurrent.length>=8)return;customComboCurrent.push(id);renderCCPreview();}
+function ccClear(){customComboCurrent=[];renderCCPreview();}
+function ccSave(){
+  if(customComboCurrent.length<2)return;
+  customCombos.push({name:'Custom '+(customCombos.length+1),seq:[...customComboCurrent]});
+  saveToStorage('tbp_custom_combos',customCombos);
+  customComboCurrent=[];renderCCPreview();renderSavedCombos();
+}
+function ccDelete(i){customCombos.splice(i,1);saveToStorage('tbp_custom_combos',customCombos);renderSavedCombos();}
+function renderCCPreview(){
+  document.getElementById('cc-preview').innerHTML=customComboCurrent.map(id=>`<div class="cc-chip">${STRIKES[id]?STRIKES[id].n:id}</div>`).join('');
+}
+function renderSavedCombos(){
+  document.getElementById('saved-combo-list').innerHTML=customCombos.map((c,i)=>`
+    <div class="saved-combo-item">
+      <div class="saved-combo-chips">${c.seq.map(id=>`<span class="scc">${STRIKES[id]?.n||id}</span>`).join('<span style="color:var(--text-faint);padding:0 2px">·</span>')}</div>
+      <span class="saved-combo-del" onclick="ccDelete(${i})">✕</span>
+    </div>`).join('');
+}
+
+// UI
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function vibrate(ms){if(config.haptic&&navigator.vibrate)navigator.vibrate(ms);}
+function triggerFlash(type,label){
+  const el=document.getElementById('phase-flash');
+  el.className='';el.innerText=label;void el.offsetWidth;el.className='flash-'+type;
+}
+function buildRoundTrack(){
+  const el=document.getElementById('round-track');el.innerHTML='';
+  for(let i=1;i<=config.rounds;i++){
+    const dot=document.createElement('div');
+    dot.className='round-dot'+(i<state.round?' done':i===state.round?' current':'');
+    el.appendChild(dot);
+  }
+}
+function updateRoundTrack(){
+  document.querySelectorAll('.round-dot').forEach((d,i)=>{
+    const r=i+1;d.className='round-dot'+(r<state.round?' done':r===state.round?' current':'');
+  });
+}
+
+// RING
+const RING_C=2*Math.PI*108;
+function setRingProgress(fraction,colorClass){
+  const p=document.getElementById('ring-progress'),g=document.getElementById('ring-glow');
+  const offset=RING_C*(1-Math.max(0,Math.min(1,fraction)));
+  p.style.strokeDashoffset=offset;g.style.strokeDashoffset=offset;
+  p.className='ring-progress '+(colorClass||'');g.className='ring-glow '+(colorClass||'');
+}
+
+// SPEAK
+function speak(text){
+  if(!config.voice)return;
+  try{window.speechSynthesis.cancel();const msg=new SpeechSynthesisUtterance(text);msg.lang='es-ES';msg.rate=1.05;window.speechSynthesis.speak(msg);}catch(e){}
+}
+
+// COMBOS
+function getComboPool(){
+  if(config.level==='custom'&&customCombos.length)return customCombos;
+  const base=COMBOS_DB[config.level]||COMBOS_DB['beginner'];
+  if(config.level==='advanced')return[...COMBOS_DB['intermediate'],...base];
+  return base;
+}
+function scheduleNextCombo(){
+  if(state.status!=='WORK'||state.isPaused)return;
+  const baseMs=config.freq*1000,variance=(Math.random()*0.4-0.2)*baseMs;
+  state.comboTimeoutId=setTimeout(()=>{
+    if(state.status==='WORK'&&!state.isPaused){executeCombo();scheduleNextCombo();}
+  },baseMs+variance);
+}
+function executeCombo(){
+  if(config.cardioMode)return;
+  const container=document.getElementById('combo-chips'),nameEl=document.getElementById('combo-name');
+  container.innerHTML='';container.classList.remove('animate-in');void container.offsetWidth;container.classList.add('animate-in');
+  if(config.spikes&&Math.random()<config.spikeProb){
+    const spk=SPIKES[Math.floor(Math.random()*SPIKES.length)];
+    container.innerHTML=`<div class="chip spike"><div class="num">${spk.n}</div><div class="hand">ACONDICIONAMIENTO</div></div>`;
+    nameEl.innerText='⚡ Sube pulsaciones';speak(spk.s);addToLog('⚡ '+spk.n);state.combosThisSession++;return;
+  }
+  const pool=getComboPool(),combo=pool[Math.floor(Math.random()*pool.length)],speechParts=[];
+  combo.seq.forEach(id=>{
+    const st=STRIKES[id];if(!st)return;speechParts.push(st.s);
+    container.innerHTML+=`<div class="chip ${st.def?'defense':''}"><div class="num">${st.n}</div><div class="hand">${st.def?'':getHandText(st.h)}</div></div>`;
+  });
+  nameEl.innerText=combo.name||'';speak(speechParts.join(', '));
+  addToLog(combo.seq.map(id=>STRIKES[id]?.n||id).join('-'));state.combosThisSession++;
+}
+function addToLog(text){
+  state.comboLog.push(text);if(state.comboLog.length>3)state.comboLog.shift();
+  document.getElementById('combo-log').innerHTML=state.comboLog.map((e,i)=>
+    `<div class="combo-log-entry" style="opacity:${0.3+0.35*(i/(state.comboLog.length-1||1))}">${e}</div>`).join('');
+}
+
+// TIMER — setTimeout recursivo con corrección de drift
+// Funciona desde file://, servidores, móvil y escritorio sin depender de Workers ni Blob URLs
+let timerSecs=0,_timerId=null,_nextTick=0,_running=false;
+
+function startTimer(){
+  stopTimer();
+  _running=true;
+  _nextTick=Date.now()+1000;
+  _timerId=setTimeout(_runTick,1000);
+}
+function _runTick(){
+  _timerId=null;
+  if(!_running||state.isPaused)return;
+  _nextTick+=1000;
+  tick();
+  // Reagendar solo si seguimos corriendo (tick puede haber llamado stopTimer via advancePhase)
+  if(_running){
+    var delay=Math.max(0,_nextTick-Date.now());
+    _timerId=setTimeout(_runTick,delay);
+  }
+}
+function stopTimer(){
+  _running=false;
+  if(_timerId!==null){clearTimeout(_timerId);_timerId=null;}
+}
+
+function startWorkout(){
+  try{getAudioCtx().resume();}catch(e){}
+  requestWakeLock();
+  state.round=1;state.status='PREP';state.isPaused=false;
+  state.combosThisSession=0;state.comboLog=[];state.sessionStartTime=Date.now();
+  buildRoundTrack();showView('view-arena');setPhase('PREP',10);
+}
+function setPhase(phase,durationSecs){
+  stopTimer();
+  clearTimeout(state.comboTimeoutId);state.comboTimeoutId=null;
+  state.status=phase;state.totalDuration=durationSecs;state.timeRemaining=durationSecs;
+  timerSecs=durationSecs;
+  const badge=document.getElementById('arena-status');
+  const display=document.getElementById('arena-timer');
+  const pulse=document.getElementById('timer-pulse');
+  document.getElementById('combo-chips').innerHTML='';
+  document.getElementById('combo-name').innerText='';
+  display.className='timer-display';
+  badge.className='status-badge';
+  display.innerText=formatTime(durationSecs);
+  if(phase==='PREP'){
+    badge.classList.add('prep');badge.innerText='PREPARACIÓN';display.classList.add('gold');
+    setRingProgress(1,'gold');pulse.classList.remove('pulsing');
+    setTimeout(function(){triggerFlash('rest','PREPÁRATE');speak('Guantes arriba. Prepárate.');},50);
+  }else if(phase==='WORK'){
+    badge.classList.add('work');badge.innerText='TRABAJO';display.classList.add('red');
+    setRingProgress(1,'');pulse.classList.add('pulsing');
+    vibrate(500);scheduleNextCombo();
+    setTimeout(function(){playTone('start');triggerFlash('work','COMBATE');speak('Combate. Uno dos.');},50);
+  }else if(phase==='REST'){
+    badge.classList.add('rest');badge.innerText='DESCANSO';display.classList.add('green');
+    setRingProgress(1,'green');pulse.classList.remove('pulsing');
+    vibrate([200,100,200]);
+    setTimeout(function(){playTone('end');triggerFlash('rest','DESCANSA');speak('Descansa. Respira.');},50);
+  }
+  updateRoundTrack();
+  startTimer();
+}
+function tick(){
+  timerSecs--;
+  state.timeRemaining=timerSecs;
+  document.getElementById('arena-timer').innerText=formatTime(Math.max(0,timerSecs));
+  var colorClass=state.status==='REST'?'green':state.status==='PREP'?'gold':'';
+  setRingProgress(Math.max(0,timerSecs/state.totalDuration),colorClass);
+  if(timerSecs<=10&&timerSecs>0){playTone('tick');vibrate(30);}
+  if(timerSecs<=0){
+    // No llamar stopTimer aquí — advancePhase→setPhase lo hace
+    _running=false; // marcar como parado para que _runTick no reagende
+    advancePhase();
+  }
+}
+function advancePhase(){
+  if(state.status==='PREP'||state.status==='REST'){setPhase('WORK',config.work);}
+  else if(state.status==='WORK'){
+    if(state.round<config.rounds){state.round++;setPhase('REST',config.rest);}
+    else{finishWorkout();}
+  }
+}
+function skipPhase(){
+  stopTimer();
+  clearTimeout(state.comboTimeoutId);state.comboTimeoutId=null;
+  advancePhase();
+}
+function pauseResume(){
+  var btn=document.getElementById('btn-pause');
+  if(state.isPaused){
+    state.isPaused=false;
+    btn.innerText='PAUSAR';
+    _running=true;
+    _nextTick=Date.now()+1000;
+    _timerId=setTimeout(_runTick,1000);
+    if(state.status==='WORK')scheduleNextCombo();
+  }else{
+    state.isPaused=true;
+    btn.innerText='REANUDAR';
+    stopTimer();
+    clearTimeout(state.comboTimeoutId);
+  }
+}
+function confirmStop(){if(confirm('¿Abandonar la sesión?'))stopWorkout();}
+function stopWorkout(){
+  stopTimer();clearTimeout(state.comboTimeoutId);state.comboTimeoutId=null;releaseWakeLock();
+  window.speechSynthesis&&window.speechSynthesis.cancel();showView('view-settings');
+}
+function finishWorkout(){
+  stopTimer();clearTimeout(state.comboTimeoutId);state.comboTimeoutId=null;releaseWakeLock();
+  window.speechSynthesis&&window.speechSynthesis.cancel();
+  const totalSecs=Math.round((Date.now()-state.sessionStartTime)/1000);
+  const combos=state.combosThisSession,rounds=state.round;
+  saveSession(combos,rounds,totalSecs);
+  const history=loadFromStorage('tbp_history')||[];
+  const prevBest=Math.max(0,...history.slice(0,-1).map(h=>h.combos));
+  const isPB=history.length>1&&combos>prevBest;
+  document.getElementById('stat-combos').innerText=combos;
+  document.getElementById('stat-rounds').innerText=rounds;
+  const m=Math.floor(totalSecs/60),s=totalSecs%60;
+  document.getElementById('stat-time').innerText=m+':'+(s<10?'0':'')+s;
+  document.getElementById('stat-streak').innerText=getStreak();
+  document.getElementById('pb-badge').className='personal-best-badge'+(isPB?' show':'');
+  playTone('finish');vibrate(1000);showView('view-finished');speak('Sesión completada. Excelente trabajo.');
+}
+function resetApp(){updateStreakDisplay();showView('view-settings');}
+function formatTime(secs){const m=Math.floor(secs/60),s=secs%60;return m+':'+(s<10?'0':'')+s;}
+
+// SETTINGS WIRING
+document.getElementById('sl-rounds').oninput=e=>{config.rounds=parseInt(e.target.value);document.getElementById('lbl-rounds').innerText=config.rounds;};
+document.getElementById('sl-work').oninput=e=>{
+  const v=parseFloat(e.target.value);config.work=v*60;
+  const m=Math.floor(v),s=(v%1)*60;
+  document.getElementById('lbl-work').innerText=m+(s?':30':':00');
+};
+document.getElementById('sl-rest').oninput=e=>{config.rest=parseInt(e.target.value);document.getElementById('lbl-rest').innerText=config.rest;};
+
+function setupPills(groupId,configKey,transform){
+  document.querySelectorAll('#'+groupId+' .pill').forEach(p=>{
+    p.onclick=()=>{
+      document.querySelectorAll('#'+groupId+' .pill').forEach(el=>el.classList.remove('active'));
+      p.classList.add('active');config[configKey]=transform?transform(p.dataset.val):p.dataset.val;
+      if(groupId==='grp-level'){document.getElementById('custom-builder').style.display=config.level==='custom'?'block':'none';renderSavedCombos();}
+    };
+  });
+}
+setupPills('grp-stance','stance');
+setupPills('grp-level','level');
+setupPills('grp-freq','freq',v=>parseInt(v));
+setupPills('grp-spike-prob','spikeProb',v=>parseFloat(v));
+
+function toggleSwitch(id){
+  const el=document.getElementById(id);el.classList.toggle('on');const isOn=el.classList.contains('on');
+  if(id==='sw-voice')config.voice=isOn;
+  if(id==='sw-haptic')config.haptic=isOn;
+  if(id==='sw-cardio')config.cardioMode=isOn;
+  if(id==='sw-spikes'){config.spikes=isOn;document.getElementById('spike-level-cfg').style.display=isOn?'flex':'none';}
+}
+
+// INIT
+updateStreakDisplay();
+renderSavedCombos();
+document.getElementById('ring-progress').style.strokeDasharray=RING_C;
+document.getElementById('ring-glow').style.strokeDasharray=RING_C;
+setRingProgress(1,'gold');
+</script>
+</body>
+</html>
