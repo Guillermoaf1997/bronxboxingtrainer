@@ -613,29 +613,24 @@ function addToLog(text){
     `<div class="combo-log-entry" style="opacity:${0.3+0.35*(i/(state.comboLog.length-1||1))}">${e}</div>`).join('');
 }
 
-// TIMER — setTimeout recursivo con corrección de drift
-// Funciona desde file://, servidores, móvil y escritorio sin depender de Workers ni Blob URLs
-let timerSecs=0,_timerId=null,_nextTick=0,_running=false;
+// TIMER — generación única por fase, sin condiciones de carrera
+let timerSecs=0,_timerId=null,_timerGen=0;
 
 function startTimer(){
-  stopTimer();
-  _running=true;
-  _nextTick=Date.now()+1000;
-  _timerId=setTimeout(_runTick,1000);
-}
-function _runTick(){
-  _timerId=null;
-  if(!_running||state.isPaused)return;
-  _nextTick+=1000;
-  tick();
-  // Reagendar solo si seguimos corriendo (tick puede haber llamado stopTimer via advancePhase)
-  if(_running){
-    var delay=Math.max(0,_nextTick-Date.now());
-    _timerId=setTimeout(_runTick,delay);
-  }
+  if(_timerId!==null){clearTimeout(_timerId);_timerId=null;}
+  var gen=++_timerGen; // cada fase tiene su propia generación
+  _timerId=setTimeout(function loop(){
+    _timerId=null;
+    if(gen!==_timerGen)return; // generación antigua, ignorar
+    if(state.isPaused)return;  // pausado: no reagendar; pauseResume arranca nueva generación
+    tick();
+    if(gen===_timerGen&&timerSecs>0){ // solo reagendar si esta generación sigue activa
+      _timerId=setTimeout(loop,1000);
+    }
+  },1000);
 }
 function stopTimer(){
-  _running=false;
+  _timerGen++; // invalida cualquier loop activo
   if(_timerId!==null){clearTimeout(_timerId);_timerId=null;}
 }
 
@@ -684,11 +679,7 @@ function tick(){
   var colorClass=state.status==='REST'?'green':state.status==='PREP'?'gold':'';
   setRingProgress(Math.max(0,timerSecs/state.totalDuration),colorClass);
   if(timerSecs<=10&&timerSecs>0){playTone('tick');vibrate(30);}
-  if(timerSecs<=0){
-    // No llamar stopTimer aquí — advancePhase→setPhase lo hace
-    _running=false; // marcar como parado para que _runTick no reagende
-    advancePhase();
-  }
+  if(timerSecs<=0){advancePhase();} // setPhase dentro llama stopTimer+startTimer
 }
 function advancePhase(){
   if(state.status==='PREP'||state.status==='REST'){setPhase('WORK',config.work);}
@@ -707,9 +698,7 @@ function pauseResume(){
   if(state.isPaused){
     state.isPaused=false;
     btn.innerText='PAUSAR';
-    _running=true;
-    _nextTick=Date.now()+1000;
-    _timerId=setTimeout(_runTick,1000);
+    startTimer();
     if(state.status==='WORK')scheduleNextCombo();
   }else{
     state.isPaused=true;
